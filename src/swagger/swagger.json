@@ -1,0 +1,109 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Rate-Limited API Service",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "tags": [
+    {
+      "name": "Requests",
+      "description": "Endpoints for processing rate-limited API requests"
+    },
+    {
+      "name": "Statistics",
+      "description": "Endpoints for retrieving usage statistics"
+    }
+  ],
+  "paths": {
+    "/request": {
+      "post": {
+        "tags": [
+          "Requests"
+        ],
+        "summary": "Process a rate-limited request",
+        "description": "Checks if the user has exceeded their request limit for the current minute window. Returns 200 if allowed, or 429 if rate-limited.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the user",
+                    "example": "user123"
+                  },
+                  "payload": {
+                    "type": "string",
+                    "description": "The request data to be processed",
+                    "example": "test data"
+                  }
+                },
+                "required": [
+                  "user_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Request processed successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Request processed successfully",
+                  "data": "test data"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing user_id"
+          },
+          "429": {
+            "description": "Too Many Requests - Rate limit exceeded"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/stats": {
+      "get": {
+        "tags": [
+          "Statistics"
+        ],
+        "summary": "Get all user statistics",
+        "description": "Retrieves comprehensive usage statistics for all users, including total, successful, and blocked request counts.",
+        "responses": {
+          "200": {
+            "description": "Statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Statistics retrieved successfully",
+                  "data": {
+                    "user123": {
+                      "total_request": 10,
+                      "success_request": 7,
+                      "blocked_request": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}
